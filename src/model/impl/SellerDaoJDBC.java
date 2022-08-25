@@ -8,7 +8,9 @@ import model.entities.Seller;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SellerDaoJDBC implements SellerDao {
     private Connection connection;
@@ -73,6 +75,29 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public List<Seller> findAll() {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<Seller> sellerList = new ArrayList<>();
+        try {
+            preparedStatement = connection.prepareStatement("select seller.*, department.name as dep_name from seller inner join department on seller.department_id = department.id order by name");
+            resultSet = preparedStatement.executeQuery();
+            Map<Integer, Department> departmentMap = new HashMap<>();
+            while (resultSet.next()){
+                Department department = departmentMap.get(resultSet.getInt("department_id"));
+                if(department == null){
+                    department = instantiateDepartment(resultSet);
+                    departmentMap.put(department.getId(), department);
+                }
+                Seller seller = instantiateSeller(resultSet, department);
+                sellerList.add(seller);
+            }
+            return sellerList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Db.closeResultSet(resultSet);
+            Db.closeStatement(preparedStatement);
+        }
         return null;
     }
 

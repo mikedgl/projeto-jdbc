@@ -14,5 +14,7 @@ public class Main {
         System.out.println(sellerTeste);
         System.out.println("\n========= Teste findByDepartment =========");
         sellerDao.findByDepartment(new Department(2, "TI")).stream().forEach(System.out::println);
+        System.out.println("\n========= Teste findAll =========");
+        sellerDao.findAll().stream().forEach(System.out::println);
     }
 }

@@ -2,6 +2,7 @@ package application;
 
 import model.dao.DaoFactory;
 import model.dao.SellerDao;
+import model.entities.Department;
 import model.entities.Seller;
 
 public class Main {
@@ -11,5 +12,7 @@ public class Main {
         System.out.println("========= Teste findById =========");
         Seller sellerTeste = sellerDao.findById(3);
         System.out.println(sellerTeste);
+        System.out.println("\n========= Teste findByDepartment =========");
+        sellerDao.findByDepartment(new Department(2, "TI")).stream().forEach(System.out::println);
     }
 }

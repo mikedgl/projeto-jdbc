@@ -7,6 +7,7 @@ import model.entities.Department;
 import model.entities.Seller;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SellerDaoJDBC implements SellerDao {
@@ -72,6 +73,29 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public List<Seller> findAll() {
+        return null;
+    }
+
+    @Override
+    public List<Seller> findByDepartment(Department department) {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<Seller> sellers = new ArrayList<>();
+        try {
+         preparedStatement = connection.prepareStatement("select seller.*, department.name as dep_name from seller inner join department on seller.department_id = department.id where seller.department_id = ? order by name");
+         preparedStatement.setInt(1, department.getId());
+         resultSet = preparedStatement.executeQuery();
+         while (resultSet.next()){
+             Seller seller = instantiateSeller(resultSet, department);
+             sellers.add(seller);
+         }
+         return  sellers;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Db.closeResultSet(resultSet);
+            Db.closeStatement(preparedStatement);
+        }
         return null;
     }
 }

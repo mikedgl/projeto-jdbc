@@ -21,7 +21,31 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void insert(Seller seller) {
-
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = connection.prepareStatement("insert into seller(name, email, birth_date, base_salary, department_id) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, seller.getName());
+            preparedStatement.setString(2, seller.getEmail());
+            preparedStatement.setDate(3, new java.sql.Date(seller.getBirthDate().getTime()));
+            preparedStatement.setDouble(4, seller.getBaseSalary());
+            preparedStatement.setInt(5, seller.getDepartment().getId());
+            int rowsAffected = preparedStatement.executeUpdate();
+            if(rowsAffected > 0){
+                resultSet = preparedStatement.getGeneratedKeys();
+                if(resultSet.next()){
+                    Integer id = resultSet.getInt(1);
+                    seller.setId(id);
+                }
+            } else {
+                throw new DbException("Unexpected error! No rows affected!");
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            Db.closeResultSet(resultSet);
+            Db.closeStatement(preparedStatement);
+        }
     }
 
     @Override
@@ -93,12 +117,11 @@ public class SellerDaoJDBC implements SellerDao {
             }
             return sellerList;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DbException(e.getMessage());
         } finally {
             Db.closeResultSet(resultSet);
             Db.closeStatement(preparedStatement);
         }
-        return null;
     }
 
     @Override
@@ -116,11 +139,10 @@ public class SellerDaoJDBC implements SellerDao {
          }
          return  sellers;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DbException(e.getMessage());
         } finally {
             Db.closeResultSet(resultSet);
             Db.closeStatement(preparedStatement);
         }
-        return null;
     }
 }

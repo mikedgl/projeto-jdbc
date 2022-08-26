@@ -28,5 +28,8 @@ public class Main {
         sellerTest3.setName("Pedro Lucas");
         sellerDao.update(sellerTest3);
         System.out.println(sellerTest3);
+        System.out.println("\n========= Teste delete =========");
+        sellerDao.deleteById(10);
+        System.out.println("Delete complete!");
     }
 }

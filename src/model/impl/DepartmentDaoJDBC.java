@@ -46,8 +46,9 @@ public class DepartmentDaoJDBC implements DepartmentDao {
     public void update(Department department) {
         PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = connection.prepareStatement("update department set name = ?");
+            preparedStatement = connection.prepareStatement("update department set name = ? where id = ?");
             preparedStatement.setString(1, department.getName());
+            preparedStatement.setInt(2, department.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
